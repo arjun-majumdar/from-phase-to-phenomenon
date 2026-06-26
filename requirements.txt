@@ -1,0 +1,24 @@
+# Combined dependencies for the full pipeline:
+#   1_ThreeD_Scanning, 2_SSL_Pretraining, 3_Post_SSL_Pretraining
+#
+# Install a CUDA-enabled PyTorch build matching your system's CUDA version;
+# see https://pytorch.org/get-started/locally/ for the correct index URL.
+# (Per-stage requirements.txt files also live in each sub-directory.)
+
+# Deep learning
+torch>=2.7.1
+torchvision>=0.22.1
+pytorch-msssim>=1.0.0
+
+# Numerics / IO
+numpy>=2.2.5
+h5py>=3.9.0
+
+# Imaging
+opencv-python>=4.8.0
+imageio>=2.31.0
+Pillow>=10.0.0
+
+# Visualization / utilities
+matplotlib>=3.7.0
+tqdm>=4.65.0

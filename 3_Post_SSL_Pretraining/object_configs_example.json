@@ -1,0 +1,10 @@
+[
+    {"memmap_path": "/path/to/3D_Scans/Apple_green/Frontview_4step_demosaiced/stacked_psp.dat",  "psf_path": "/path/to/Footprint_GT_captures/Apple_green/Frontview_demosaiced/sssfootprint_90x90_patch.h5"},
+    {"memmap_path": "/path/to/3D_Scans/Apple_green/Backview_4step_demosaiced/stacked_psp.dat",   "psf_path": "/path/to/Footprint_GT_captures/Apple_green/Backview_demosaiced/sssfootprint_90x90_patch.h5"},
+    {"memmap_path": "/path/to/3D_Scans/Apple_green/Sideview1_4step_demosaiced/stacked_psp.dat",  "psf_path": "/path/to/Footprint_GT_captures/Apple_green/Sideview1_demosaiced/sssfootprint_90x90_patch.h5"},
+    {"memmap_path": "/path/to/3D_Scans/Apple_green/Sideview2_4step_demosaiced/stacked_psp.dat",  "psf_path": "/path/to/Footprint_GT_captures/Apple_green/Sideview2_demosaiced/sssfootprint_90x90_patch.h5"},
+    {"memmap_path": "/path/to/3D_Scans/Pear/Frontview_4step_demosaiced/stacked_psp.dat",         "psf_path": "/path/to/Footprint_GT_captures/Pear/Frontview_demosaiced/sssfootprint_90x90_patch.h5"},
+    {"memmap_path": "/path/to/3D_Scans/Pear/Backview_4step_demosaiced/stacked_psp.dat",          "psf_path": "/path/to/Footprint_GT_captures/Pear/Backview_demosaiced/sssfootprint_90x90_patch.h5"},
+    {"memmap_path": "/path/to/3D_Scans/Orange/Frontview_4step_demosaiced/stacked_psp.dat",       "psf_path": "/path/to/Footprint_GT_captures/Orange/Frontview_demosaiced/sssfootprint_90x90_patch.h5"},
+    {"memmap_path": "/path/to/3D_Scans/Orange/Backview_4step_demosaiced/stacked_psp.dat",        "psf_path": "/path/to/Footprint_GT_captures/Orange/Backview_demosaiced/sssfootprint_90x90_patch.h5"}
+]

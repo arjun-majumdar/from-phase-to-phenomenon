@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Self-Supervised Pretraining (SimSiam)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-soft: #111827;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --accent: #2563eb;
+      --accent-2: #06b6d4;
+      --code-bg: #0b1220;
+      --code-text: #e2e8f0;
+      --shadow: 0 24px 80px rgba(15, 23, 42, .18);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, .25), transparent 32rem),
+        radial-gradient(circle at top right, rgba(6, 182, 212, .20), transparent 28rem),
+        linear-gradient(180deg, #0f172a 0%, #111827 28rem, #f1f5f9 28rem);
+      line-height: 1.65;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .hero {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 72px 24px 44px;
+      color: white;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 12px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 999px;
+      color: #bfdbfe;
+      background: rgba(255,255,255,.08);
+      backdrop-filter: blur(16px);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: .02em;
+    }
+
+    .hero h1 {
+      max-width: 900px;
+      margin: 22px 0 16px;
+      font-size: clamp(42px, 7vw, 78px);
+      line-height: .96;
+      letter-spacing: -.055em;
+    }
+
+    .hero p {
+      max-width: 760px;
+      color: #cbd5e1;
+      font-size: 19px;
+      margin: 0;
+    }
+
+    .layout {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 20px;
+      background: rgba(255, 255, 255, .92);
+      border: 1px solid rgba(226, 232, 240, .9);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 18px 60px rgba(15, 23, 42, .10);
+      backdrop-filter: blur(16px);
+    }
+
+    .toc strong {
+      display: block;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #334155;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .toc a {
+      display: block;
+      padding: 7px 0;
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .toc a:hover {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .toc .toc-sub {
+      padding-left: 14px;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: clamp(22px, 4vw, 42px);
+      margin-bottom: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    h2, h3, h4 {
+      color: #0f172a;
+      line-height: 1.15;
+      letter-spacing: -.025em;
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      font-size: 30px;
+    }
+
+    h3 {
+      margin-top: 28px;
+      font-size: 22px;
+    }
+
+    p {
+      margin: 14px 0;
+    }
+
+    ul, ol {
+      padding-left: 1.35rem;
+    }
+
+    li {
+      margin: 8px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      overflow: hidden;
+      border-radius: 16px;
+      font-size: 14px;
+      box-shadow: 0 0 0 1px var(--line);
+    }
+
+    thead {
+      background: linear-gradient(90deg, #eff6ff, #ecfeff);
+    }
+
+    th, td {
+      padding: 13px 15px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #334155;
+      font-weight: 700;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .92em;
+      background: #e0f2fe;
+      color: #075985;
+      padding: .16rem .38rem;
+      border-radius: 7px;
+      word-break: break-word;
+    }
+
+    pre {
+      position: relative;
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 20px;
+      border-radius: 18px;
+      overflow-x: auto;
+      border: 1px solid rgba(148, 163, 184, .28);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    pre code {
+      display: block;
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+      white-space: pre;
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+
+    blockquote {
+      border-left: 4px solid var(--accent);
+      margin: 18px 0;
+      padding: 10px 18px;
+      color: #475569;
+      background: #f8fafc;
+      border-radius: 0 14px 14px 0;
+    }
+
+    .footer {
+      color: #64748b;
+      text-align: center;
+      padding: 20px 24px 60px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .toc {
+        position: relative;
+        top: auto;
+      }
+      .hero {
+        padding-top: 48px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+      .hero {
+        color: #0f172a;
+        padding-bottom: 20px;
+      }
+      .hero p, .eyebrow {
+        color: #334155;
+      }
+      .toc {
+        display: none;
+      }
+      .layout {
+        display: block;
+      }
+      .card {
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="eyebrow">README · SimSiam SSL pretraining</div>
+    <h1>Self-Supervised Pretraining (SimSiam)</h1>
+    <p>Pretrain an encoder with SimSiam on patches from captured, multi-view objects &mdash; comparing standard ImageNet-style augmentations against our novel phase-shift-profilometry (PSP) augmentations.</p>
+  </header>
+
+  <div class="layout">
+    <aside class="toc" aria-label="Table of contents">
+      <strong>Contents</strong>
+      <a href="#overview">Overview</a>
+      <a href="#contents">Contents</a>
+      <a href="#data-layout">Data layout</a>
+      <a class="toc-sub" href="#config-file">Config file</a>
+      <a href="#what-gets-used-for-pretraining">What gets used for pretraining</a>
+      <a href="#requirements">Requirements</a>
+      <a href="#running">Running</a>
+      <a class="toc-sub" href="#imagenet-augmentations">1. ImageNet-style augmentations</a>
+      <a class="toc-sub" href="#psp-augmentations">2. Our novel PSP augmentations</a>
+      <a class="toc-sub" href="#multi-node-example">Multi-node example</a>
+      <a class="toc-sub" href="#resuming">Resuming</a>
+      <a href="#command-line-arguments">Command-line arguments</a>
+      <a href="#outputs">Outputs</a>
+    </aside>
+
+    <main>
+      <section class="card" id="overview">
+        <p>This directory contains the self-supervised pretraining stage of our pipeline. We pretrain an encoder with <strong>SimSiam</strong> on patches extracted from our captured, multi-view objects, and compare two augmentation strategies:</p>
+        <ol>
+          <li><strong>Standard ImageNet-style augmentations</strong> &mdash; the conventional SSL augmentation recipe (random resized crop, color jitter, grayscale, Gaussian blur, flips).</li>
+          <li><strong>Our novel phase-shift-profilometry (PSP) augmentations</strong> &mdash; augmentations designed specifically for phase-shift image stacks (salt-and-pepper noise, Gaussian blur / phase jitter, PSP flips, and phase-shift shuffling).</li>
+        </ol>
+        <p>Both strategies are trained with the <strong>same</strong> training script, encoder, and SimSiam objective; only the dataset/augmentation module differs, selected via the <code>--aug</code> flag.</p>
+      </section>
+
+      <section class="card">
+        <h2 id="contents">Contents</h2>
+        <table>
+          <thead><tr><th>File</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr><td><code>simsiam_pretraining_torchrun.py</code></td><td>Main multi-node / multi-GPU SimSiam training script (launched with <code>torchrun</code>).</td></tr>
+            <tr><td><code>multiobject_ssl_dataset.py</code></td><td>Dataset module with both augmentation pipelines: <code>ImageNetTransforms_weakstrong</code> (ImageNet-style) and <code>PSPTransforms_weakstrong</code> (our novel PSP augmentations), plus the shared <code>MultiObjectSSS_Dataset</code>.</td></tr>
+            <tr><td><code>increased_Att_PreactRes_UNet_pxshuffle.py</code></td><td>The encoder backbone (pre-activation residual U-Net encoder with <code>PixelUnshuffle</code> downsampling).</td></tr>
+            <tr><td><code>object_configs_example.json</code></td><td>Example data-config file listing the per-object data paths.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2 id="data-layout">Data layout</h2>
+        <p>Each object/view is stored as a <strong>memory-mapped float32 array</strong> of stacked phase-shift images (<code>*.dat</code>), accompanied by:</p>
+        <ul>
+          <li>a shape file (<code>&lt;name&gt;_shape.npy</code>) with shape <code>(2 * num_phase_shifts * 3, H, W)</code> &mdash; i.e. height- and width-direction phase shifts, each with 3 RGB channels, and</li>
+          <li>We use 4-step Phase-shift Profilometry, so <code>num_phase_shifts=4</code></li>
+          <li>a coordinate file (<code>detected_xy_coords.npy</code>) of valid <code>(x, y)</code> patch centers detected on the object&#x27;s surface.</li>
+        </ul>
+        <p>The dataset classes keep the heavy image data on disk (memory-mapped) and read only the requested patch bytes in <code>__getitem__</code>, so startup is fast and RAM usage stays low regardless of the number of objects.</p>
+
+        <h3 id="config-file">Config file</h3>
+        <p>Data paths are <strong>not</strong> hardcoded. They are passed via a JSON file (see <a href="object_configs_example.json"><code>object_configs_example.json</code></a>): a list of per-object entries, each with a <code>memmap_path</code> and the matching <code>mask_path</code>:</p>
+        <pre><code class="language-json">[
+    {"memmap_path": "/path/to/Apple_green/Frontview/stacked_psp.dat", "mask_path": "/path/to/Apple_green/Frontview/detected_xy_coords.npy"},
+    {"memmap_path": "/path/to/Pear/Frontview/stacked_psp.dat",        "mask_path": "/path/to/Pear/Frontview/detected_xy_coords.npy"}
+]</code></pre>
+        <p>Add one entry per object/view; the dataset is simply the union of all valid patches across every entry.</p>
+      </section>
+
+      <section class="card">
+        <h2 id="what-gets-used-for-pretraining">What gets used for pretraining</h2>
+        <p><code>multiobject_ssl_dataset.py</code> builds the dataset that is finally used for SimSiam pretraining. Its <code>MultiObjectSSS_Dataset</code>:</p>
+        <ol>
+          <li>Reads every object/view listed in the config file and memory-maps its stacked PSP <code>.dat</code> array.</li>
+          <li>Computes the list of valid patch centers from each <code>detected_xy_coords.npy</code>, discarding coordinates whose crop would fall outside the image bounds.</li>
+          <li>In <code>__getitem__</code>, crops a <code>bbox_size &times; bbox_size</code> patch of shape <code>(num_phase_shifts * 2, 3, H, W)</code>, then delegates to the selected <strong>weak/strong transform</strong>, which produces a <em>weak</em> view and a <em>strong</em> view of the same patch &mdash; the two augmented views SimSiam compares.</li>
+        </ol>
+        <p>The result is a single large patch dataset pooled across <strong>all objects and all views</strong>. The two views (<code>x_weak</code>, <code>x_strong</code>) are each reshaped to <code>(num_phase_shifts * 2 * 3, H, W)</code> and fed to the encoder as the two SimSiam branches.</p>
+        <p>The augmentation pipeline is chosen by the <code>--aug</code> flag: <code>imagenet</code> uses <code>ImageNetTransforms_weakstrong</code> (the conventional SSL recipe), while <code>psp</code> uses <code>PSPTransforms_weakstrong</code> (the novel augmentations introduced in our paper). Both live in <code>multiobject_ssl_dataset.py</code> and share the same <code>(weak, strong)</code> interface, so the dataset stays augmentation-agnostic.</p>
+      </section>
+
+      <section class="card">
+        <h2 id="requirements">Requirements</h2>
+        <ul>
+          <li>Python 3.9+</li>
+          <li>PyTorch (with CUDA + NCCL), torchvision, NumPy, Pillow &mdash; see the combined <a href="../requirements.txt"><code>requirements.txt</code></a> at the repo root</li>
+          <li>A shared filesystem across nodes (for checkpoints) when training multi-node.</li>
+        </ul>
+        <p>Install with:</p>
+        <pre><code class="language-bash">pip install -r ../requirements.txt</code></pre>
+        <blockquote><strong>Note:</strong> install a CUDA-enabled PyTorch build matching your system's CUDA version (see <a href="https://pytorch.org/get-started/locally/">pytorch.org/get-started/locally</a>); the default PyPI wheel may be CPU-only.</blockquote>
+      </section>
+
+      <section class="card">
+        <h2 id="running">Running</h2>
+        <p>Training is launched with <code>torchrun</code>, which supplies the distributed configuration (<code>RANK</code>, <code>WORLD_SIZE</code>, <code>LOCAL_RANK</code>, <code>MASTER_ADDR</code>, <code>MASTER_PORT</code>) via environment variables. The script reads them automatically.</p>
+
+        <h3 id="imagenet-augmentations">1. ImageNet-style augmentations</h3>
+        <p>To pretrain with the standard ImageNet-style SSL augmentations on the captured, multi-view objects:</p>
+        <pre><code class="language-bash"># Single node, 4 GPUs
+torchrun --standalone --nproc_per_node=4 \
+    simsiam_pretraining_torchrun.py \
+    --aug imagenet \
+    --config object_configs_example.json \
+    --output-dir ./outputs_imagenet \
+    --batch-size 200 --epochs 200 --warmup-epochs 20 --init-lr 0.05</code></pre>
+
+        <h3 id="psp-augmentations">2. Our novel PSP augmentations</h3>
+        <p>To pretrain with our novel data augmentations on the <strong>same</strong> objects, switch the <code>--aug</code> flag to <code>psp</code>:</p>
+        <pre><code class="language-bash"># Single node, 4 GPUs
+torchrun --standalone --nproc_per_node=4 \
+    simsiam_pretraining_torchrun.py \
+    --aug psp \
+    --config object_configs_example.json \
+    --output-dir ./outputs_psp \
+    --batch-size 200 --epochs 200 --warmup-epochs 20 --init-lr 0.05 \
+    --base-crop-size 80 --bbox-size 90 --num-phase-shifts 4</code></pre>
+
+        <h3 id="multi-node-example">Multi-node example</h3>
+        <p>On each node, run <code>torchrun</code> with the shared rendezvous endpoint (replace <code>MASTER_IP</code>, and set <code>--node_rank</code> per node):</p>
+        <pre><code class="language-bash"># 2 nodes, 4 GPUs each (run on every node, changing --node_rank)
+torchrun \
+    --nnodes=2 --nproc_per_node=4 --node_rank=0 \
+    --master_addr=MASTER_IP --master_port=12355 \
+    simsiam_pretraining_torchrun.py \
+    --aug imagenet \
+    --config object_configs_example.json \
+    --output-dir /shared/outputs_imagenet</code></pre>
+
+        <h3 id="resuming">Resuming</h3>
+        <p>A resume checkpoint is written every epoch to the output directory. To continue an interrupted run, add <code>--resume</code> with the same arguments:</p>
+        <pre><code class="language-bash">torchrun --standalone --nproc_per_node=4 \
+    simsiam_pretraining_torchrun.py \
+    --aug imagenet --config object_configs_example.json \
+    --output-dir ./outputs_imagenet --resume</code></pre>
+      </section>
+
+      <section class="card">
+        <h2 id="command-line-arguments">Command-line arguments</h2>
+        <table>
+          <thead><tr><th>Argument</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>--config</code></td><td><em>(required)</em></td><td>JSON file of per-object <code>{memmap_path, mask_path}</code> entries.</td></tr>
+            <tr><td><code>--output-dir</code></td><td><em>(required)</em></td><td>Where checkpoints and the training history are written.</td></tr>
+            <tr><td><code>--aug</code></td><td><code>imagenet</code></td><td>Augmentation pipeline: <code>imagenet</code> or <code>psp</code>.</td></tr>
+            <tr><td><code>--init-weights</code></td><td><code>None</code></td><td>Optional path to a saved initial <code>state_dict</code> (loaded on rank 0, then broadcast to all ranks).</td></tr>
+            <tr><td><code>--batch-size</code></td><td><code>200</code></td><td>Per-GPU batch size.</td></tr>
+            <tr><td><code>--epochs</code></td><td><code>200</code></td><td>Total training epochs.</td></tr>
+            <tr><td><code>--warmup-epochs</code></td><td><code>20</code></td><td>Linear LR warmup epochs (cosine decay afterward).</td></tr>
+            <tr><td><code>--init-lr</code></td><td><code>0.05</code></td><td>Initial (peak) learning rate; no linear batch-size scaling is applied.</td></tr>
+            <tr><td><code>--num-workers</code></td><td><code>8</code></td><td>DataLoader workers per GPU.</td></tr>
+            <tr><td><code>--bbox-size</code></td><td><code>90</code></td><td>Square crop size (H = W) fed to the encoder.</td></tr>
+            <tr><td><code>--base-crop-size</code></td><td><code>80</code></td><td>PSP only: initial random crop size before resizing to <code>--bbox-size</code>.</td></tr>
+            <tr><td><code>--num-phase-shifts</code></td><td><code>4</code></td><td>Phase shifts per direction; input channels = <code>num_phase_shifts * 2 * 3</code>.</td></tr>
+            <tr><td><code>--resume</code></td><td>off</td><td>Resume from the latest resume checkpoint in <code>--output-dir</code>.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2 id="outputs">Outputs</h2>
+        <p>Written to <code>--output-dir</code> (suffixed by the chosen <code>--aug</code>):</p>
+        <ul>
+          <li><code>simsiam_encoder_&lt;aug&gt;.pth</code> &mdash; best encoder weights (lowest training loss).</li>
+          <li><code>simsiam_resume_ckpt_&lt;aug&gt;.pth</code> &mdash; latest full checkpoint (model + optimizer + history) for resuming.</li>
+          <li><code>simsiam_encoder_&lt;aug&gt;_trainhist.pkl</code> &mdash; per-epoch training history (loss, LR, and <code>z</code>-vector std used to monitor representational collapse).</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <footer class="footer">
+    Generated from README.md
+  </footer>
+</body>
+</html>

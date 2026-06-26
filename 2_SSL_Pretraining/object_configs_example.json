@@ -1,0 +1,14 @@
+[
+    {"memmap_path": "/path/to/3D_Scans/Apple_green/Frontview_4step_demosaiced/stacked_psp.dat",  "mask_path": "/path/to/Footprint_GT_captures/Apple_green/Frontview_demosaiced/detected_xy_coords.npy"},
+    {"memmap_path": "/path/to/3D_Scans/Apple_green/Backview_4step_demosaiced/stacked_psp.dat",   "mask_path": "/path/to/Footprint_GT_captures/Apple_green/Backview_demosaiced/detected_xy_coords.npy"},
+    {"memmap_path": "/path/to/3D_Scans/Apple_green/Sideview1_4step_demosaiced/stacked_psp.dat",  "mask_path": "/path/to/Footprint_GT_captures/Apple_green/Sideview1_demosaiced/detected_xy_coords.npy"},
+    {"memmap_path": "/path/to/3D_Scans/Apple_green/Sideview2_4step_demosaiced/stacked_psp.dat",  "mask_path": "/path/to/Footprint_GT_captures/Apple_green/Sideview2_demosaiced/detected_xy_coords.npy"},
+    {"memmap_path": "/path/to/3D_Scans/Pear/Frontview_4step_demosaiced/stacked_psp.dat",         "mask_path": "/path/to/Footprint_GT_captures/Pear/Frontview_demosaiced/detected_xy_coords.npy"},
+    {"memmap_path": "/path/to/3D_Scans/Pear/Backview_4step_demosaiced/stacked_psp.dat",          "mask_path": "/path/to/Footprint_GT_captures/Pear/Backview_demosaiced/detected_xy_coords.npy"},
+    {"memmap_path": "/path/to/3D_Scans/Pear/Sideview1_4step_demosaiced/stacked_psp.dat",         "mask_path": "/path/to/Footprint_GT_captures/Pear/Sideview1_demosaiced/detected_xy_coords.npy"},
+    {"memmap_path": "/path/to/3D_Scans/Pear/Sideview2_4step_demosaiced/stacked_psp.dat",         "mask_path": "/path/to/Footprint_GT_captures/Pear/Sideview2_demosaiced/detected_xy_coords.npy"},
+    {"memmap_path": "/path/to/3D_Scans/Orange/Frontview_4step_demosaiced/stacked_psp.dat",       "mask_path": "/path/to/Footprint_GT_captures/Orange/Frontview_demosaiced/detected_xy_coords.npy"},
+    {"memmap_path": "/path/to/3D_Scans/Orange/Backview_4step_demosaiced/stacked_psp.dat",        "mask_path": "/path/to/Footprint_GT_captures/Orange/Backview_demosaiced/detected_xy_coords.npy"},
+    {"memmap_path": "/path/to/3D_Scans/Orange/Sideview1_4step_demosaiced/stacked_psp.dat",       "mask_path": "/path/to/Footprint_GT_captures/Orange/Sideview1_demosaiced/detected_xy_coords.npy"},
+    {"memmap_path": "/path/to/3D_Scans/Orange/Sideview2_4step_demosaiced/stacked_psp.dat",       "mask_path": "/path/to/Footprint_GT_captures/Orange/Sideview2_demosaiced/detected_xy_coords.npy"}
+]

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /home/amajumdar/ECCV2026/official_github_codes/3_Post_SSL_Pretraining/)",
+      "Bash(ls -la *.py)"
+    ]
+  }
+}
